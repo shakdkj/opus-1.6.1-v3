@@ -1,0 +1,33 @@
+# Build
+build/
+Debug/
+Release/
+*.o
+*.obj
+*.lib
+*.exe
+
+# Python temp
+*.pyc
+__pycache__/
+_extract_*.py
+_paper_*.txt
+
+# Test outputs
+stego_eval/legacy/
+stego_eval/archive/
+stego_eval/output_*/
+stego_eval/corpus_sample/
+*.pcm
+*.bit
+*.bin
+
+# IDE
+.vs/
+.vscode/
+*.user
+*.suo
+
+# OS
+.DS_Store
+Thumbs.db

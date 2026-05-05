@@ -1,0 +1,250 @@
+/***********************************************************************
+ C1: Pulse value LSB embedding (1 bit per non-zero pulse, ±1 magnitude).
+***********************************************************************/
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#include "main.h"
+#include "stego_pulse_matrix.h"
+
+/* Pick up to max_count carrier indices: smallest |pulse| first, left-to-right on ties. */
+static opus_int silk_stego_pick_carriers_ix_max(
+    const opus_int8             *pulses8,
+    const opus_int16            *pulses16,
+    opus_int                    frame_length,
+    opus_int                    idx[],
+    opus_int                    max_count
+)
+{
+    opus_int k, i, round;
+    for( k = 0; k < max_count; k++ ) {
+        idx[ k ] = -1;
+    }
+    for( k = 0; k < max_count; k++ ) {
+        opus_int best_idx = -1;
+        opus_int best_abs = 1 << 30;
+        for( i = 0; i < frame_length; i++ ) {
+            opus_int abs_q;
+            opus_int used = 0;
+            if( pulses8 != NULL ) {
+                abs_q = silk_abs( (opus_int)pulses8[ i ] );
+            } else {
+                abs_q = silk_abs( (opus_int)pulses16[ i ] );
+            }
+            if( abs_q == 0 ) {
+                continue;
+            }
+            for( round = 0; round < k; round++ ) {
+                if( idx[ round ] == i ) {
+                    used = 1;
+                }
+            }
+            if( used ) {
+                continue;
+            }
+            if( abs_q < best_abs || ( abs_q == best_abs && ( best_idx < 0 || i < best_idx ) ) ) {
+                best_abs = abs_q;
+                best_idx = i;
+            }
+        }
+        if( best_idx < 0 ) {
+            return k;
+        }
+        idx[ k ] = best_idx;
+    }
+    return max_count;
+}
+
+/* Embed: modify pulse value LSB (not sign). ±1 to match target LSB. */
+void silk_stego_embed_pulse_lsb(
+    opus_int8                   pulses[],
+    opus_int                    frame_length,
+    opus_int                    stego_bits,
+    opus_int                    stego_nbits,
+    opus_int                    *applied_bits_out,
+    opus_int                    *applied_nbits_out
+)
+{
+    opus_int idx[ SILK_STEGO_MAX_CARRIERS ];
+    opus_int n_carriers, i, bit;
+
+    *applied_bits_out = 0;
+    *applied_nbits_out = 0;
+    if( stego_nbits <= 0 ) return;
+
+    n_carriers = silk_stego_pick_carriers_ix_max( pulses, NULL, frame_length, idx, SILK_STEGO_MAX_CARRIERS );
+    if( n_carriers <= 0 ) return;
+
+    opus_int nbits = silk_min( stego_nbits, n_carriers );
+
+    for( i = 0; i < nbits; i++ ) {
+        opus_int pos = idx[ i ];
+        opus_int target = ( stego_bits >> i ) & 0x1;
+        opus_int val = pulses[ pos ];
+        opus_int abs_val = silk_abs( val );
+        if( abs_val == 0 ) continue;
+
+        /* ±1 search to match LSB of magnitude */
+        opus_int sign = ( val < 0 ) ? -1 : 1;
+        opus_int new_abs = abs_val;
+        if( ( abs_val & 1 ) != target ) {
+            if( abs_val + 1 <= 127 ) {
+                new_abs = abs_val + 1;
+            } else if( abs_val - 1 >= 1 ) {
+                new_abs = abs_val - 1;
+            } else {
+                continue;
+            }
+        }
+        pulses[ pos ] = (opus_int8)( sign * new_abs );
+        *applied_bits_out |= ( target & 1 ) << i;
+        (*applied_nbits_out)++;
+    }
+}
+
+/* --- C3: Gain index LSB embedding --- */
+
+static opus_int silk_stego_match_lsb_n(
+    opus_int                    *value_io,
+    opus_int                    nbits,
+    opus_int                    target_bits,
+    opus_int                    min_value,
+    opus_int                    max_value
+)
+{
+    if( value_io == NULL || nbits <= 0 ) return 0;
+    opus_int mask = (1 << nbits) - 1;
+    target_bits &= mask;
+    opus_int cur = *value_io;
+    if( cur < min_value || cur > max_value ) return 0;
+    if( (cur & mask) == target_bits ) return 1;
+
+    opus_int best = cur;
+    opus_int best_cost = 1<<30;
+    for( opus_int d = -1; d <= 1; d++ ) {
+        opus_int cand = cur + d;
+        if( cand < min_value || cand > max_value ) continue;
+        if( (cand & mask) == target_bits ) {
+            opus_int cost = silk_abs(d);
+            if( cost < best_cost || (cost == best_cost && cand < best) ) {
+                best_cost = cost;
+                best = cand;
+            }
+        }
+    }
+    if( best_cost >= (1<<30) ) return 0;
+    *value_io = best;
+    return 1;
+}
+
+void silk_stego_embed_mixed(
+    opus_int8                   *pulses,
+    SideInfoIndices             *psIndices,
+    opus_int                    frame_length,
+    opus_int                    fs_kHz,
+    opus_int                    nb_subfr,
+    opus_int                    signalType,
+    opus_int                    condCoding,
+    opus_int                    lag,
+    opus_int                    stego_bits,
+    opus_int                    stego_nbits,
+    opus_int                    *applied_bits_out,
+    opus_int                    *applied_nbits_out
+)
+{
+    opus_int applied = 0;
+    opus_int n = 0;
+    (void)pulses;
+    (void)frame_length;
+    (void)fs_kHz;
+    (void)lag;
+    (void)signalType;
+    *applied_bits_out = 0;
+    *applied_nbits_out = 0;
+
+    if (stego_nbits <= 0) {
+        return;
+    }
+
+    opus_int gain_max = (condCoding == CODE_CONDITIONALLY) ?
+                        (MAX_DELTA_GAIN_QUANT - MIN_DELTA_GAIN_QUANT) : (N_LEVELS_QGAIN - 1);
+    for (opus_int k = 0; k < nb_subfr && n < stego_nbits; k++) {
+        opus_int target = (stego_bits >> n) & 0x1;
+        opus_int v = psIndices->GainsIndices[k];
+        if (silk_stego_match_lsb_n(&v, 1, target, 0, gain_max)) {
+            psIndices->GainsIndices[k] = (opus_int8)v;
+            applied |= target << n;
+            n++;
+        }
+    }
+
+    *applied_bits_out = applied;
+    *applied_nbits_out = n;
+}
+
+void silk_stego_extract_mixed(
+    const opus_int8             *pulses,
+    const SideInfoIndices       *psIndices,
+    opus_int                    frame_length,
+    opus_int                    fs_kHz,
+    opus_int                    nb_subfr,
+    opus_int                    signalType,
+    opus_int                    *bits_out,
+    opus_int                    *nbits_out
+)
+{
+    opus_int bits = 0;
+    opus_int n = 0;
+    (void)pulses;
+    (void)frame_length;
+    (void)fs_kHz;
+
+    *bits_out = 0;
+    *nbits_out = 0;
+    if( psIndices == NULL ) {
+        return;
+    }
+
+    (void)signalType;
+
+    /* Gain index LSB extraction: 1 bit per subframe. */
+    {
+        opus_int k;
+        for( k = 0; k < nb_subfr && n < SILK_STEGO_MAX_BITS; k++ ) {
+            bits |= ( psIndices->GainsIndices[ k ] & 1 ) << n;
+            n++;
+        }
+    }
+
+    *bits_out = bits;
+    *nbits_out = n;
+}
+
+/* Extract: read pulse value LSB. */
+void silk_stego_extract_pulse_lsb(
+    const opus_int16            pulses[],
+    opus_int                    frame_length,
+    opus_int                    *bits_out,
+    opus_int                    *nbits_out
+)
+{
+    opus_int idx[ SILK_STEGO_MAX_CARRIERS ];
+    opus_int n_carriers, i;
+
+    *bits_out = 0;
+    *nbits_out = 0;
+
+    n_carriers = silk_stego_pick_carriers_ix_max( NULL, pulses, frame_length, idx, SILK_STEGO_MAX_CARRIERS );
+    if( n_carriers <= 0 ) return;
+
+    opus_int nbits = silk_min( SILK_STEGO_MAX_BITS, n_carriers );
+
+    for( i = 0; i < nbits; i++ ) {
+        opus_int pos = idx[ i ];
+        opus_int abs_val = silk_abs( (opus_int)pulses[ pos ] );
+        if( abs_val == 0 ) break;
+        *bits_out |= ( abs_val & 1 ) << i;
+        (*nbits_out)++;
+    }
+}

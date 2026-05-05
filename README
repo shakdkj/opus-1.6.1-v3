@@ -1,0 +1,176 @@
+== Opus 音频编解码器 ==
+
+Opus 是一种用于互联网交互式语音与音频传输的编解码器。
+
+  Opus 可处理广泛的交互式音频应用，包括
+IP 语音（VoIP）、视频会议、游戏内聊天，甚至远程实时音乐演出。
+它可从低比特率窄带语音扩展到高音质立体声音乐。
+
+  Opus 在配合合适的封装格式时，也适用于非实时的
+文件存储类应用，例如音乐分发、游戏原声、便携音乐播放器、
+点唱机，以及其他历史上使用高延迟格式（如 MP3、AAC 或 Vorbis）
+的应用场景。
+
+                    Opus 的规范见 IETF RFC 6716：
+                    https://tools.ietf.org/html/rfc6716
+
+  Opus 格式及其本实现受 COPYING 文件中所述的免版税
+专利与版权许可约束。
+
+本软件包实现了一个用于编码和解码原始 Opus 比特流的共享库。
+根据以下规范，原始 Opus 比特流应通过 RTP 使用：
+ https://tools.ietf.org/html/rfc7587
+
+软件包还包含若干测试工具，用于验证库是否正常工作。
+这些工具读写的比特流不应用于 Opus 文件分发：其中包含
+额外的调试数据，且不支持随机定位（seeking）。
+
+文件中存储 Opus 时，应使用 Opus 的 Ogg 封装格式，详见：
+ https://tools.ietf.org/html/rfc7845
+
+可使用 opus-tools 软件包，它提供 Ogg 封装 Opus 文件的
+编码与解码，并包含许多实用功能。
+
+opus-tools 可在以下地址获取：
+ https://gitlab.xiph.org/xiph/opus-tools.git
+或访问 Opus 官方网站：
+ https://opus-codec.org/
+
+== 深度学习与 Opus ==
+
+有损网络仍然是实时通信中的一项挑战。
+尽管 Opus 的原始实现提供了优秀的丢包隐藏机制，
+团队仍持续改进方法，以在复杂网络环境中提升音频质量。
+
+在 Opus 1.5 中，我们加入了基于深度学习的冗余编码器：
+通过在每个数据包的填充区嵌入一秒恢复数据，来改善有损网络下的音频。
+该恢复数据编码与解码背后的核心算法称为深度冗余（DRED）算法。
+借助包内填充数据，Opus 1.5 与先前版本保持完全向后兼容。
+如需了解 DRED，请查看 `dnn` 子目录下的 README。
+
+DRED 由一个最初受 Amazon Web Services 资助的团队开发，
+该团队不仅开源了实现，也在 IETF 启动了标准化流程：
+  https://datatracker.ietf.org/doc/draft-ietf-mlcodec-opus-extension/
+Opus 的许可条款或知识产权立场并不会因 Opus 1.5 而改变。
+
+== 编译 libopus ==
+
+若从发布版 tarball 构建，仅需执行以下步骤：
+
+    % ./configure
+    % make
+
+若从 git 仓库构建，需要执行以下步骤：
+
+0) 搭建开发环境：
+
+在 Ubuntu 或 Debian 系 Linux 发行版上：
+
+    % sudo apt-get install git autoconf automake libtool gcc make
+
+在 Fedora/Redhat 系 Linux 上：
+
+    % sudo dnf install git autoconf automake libtool gcc make
+
+或在较旧的 Redhat/Centos Linux 发行版上：
+
+    % sudo yum install git autoconf automake libtool gcc make
+
+在 Apple macOS 上，请安装 Xcode 与 brew.sh，然后在终端输入：
+
+    % brew install autoconf automake libtool
+
+1) 克隆仓库：
+
+    % git clone https://gitlab.xiph.org/xiph/opus.git
+    % cd opus
+
+2) 编译源码
+
+    % ./autogen.sh
+    % ./configure
+    % make
+
+在 x86 平台上，建议使用可启用 AVX2 的 `-march=` 选项。
+
+3) 安装编解码库（可选）
+
+    % sudo make install
+
+编译完成后，顶层目录会生成 `opus_demo` 可执行文件。
+
+用法：opus_demo [-e] <application> <sampling rate (Hz)> <channels (1/2)>
+         <bits per second> [options] <input> <output>
+       opus_demo -d <sampling rate (Hz)> <channels (1/2)> [options]
+         <input> <output>
+
+mode: voip | audio | restricted-lowdelay
+options:
+  -e                : 仅运行编码器（输出比特流）
+  -d                : 仅运行解码器（读取输入比特流）
+  -cbr              : 启用恒定比特率；默认：可变比特率
+  -cvbr             : 启用受限可变比特率；默认：
+                      非受限
+  -bandwidth <NB|MB|WB|SWB|FB>
+                    : 音频带宽（从窄带到全带）；
+                      默认：采样率
+  -framesize <2.5|5|10|20|40|60>
+                    : 帧长（毫秒）；默认：20
+  -max_payload <bytes>
+                    : 最大负载字节数，默认：1024
+  -complexity <comp>
+                    : 复杂度，0（最低）... 10（最高）；默认：10
+  -inbandfec        : 启用 SILK 带内 FEC
+  -forcemono        : 强制单声道编码，即使输入是立体声
+  -dtx              : 启用 SILK DTX
+  -loss <perc>      : 模拟丢包率，百分比（0-100）；默认：0
+
+输入和输出可以是小端有符号 16 位 PCM 文件，
+或使用简单 `opus_demo` 私有帧格式的 opus 比特流。
+
+== 测试 ==
+
+本软件包包含一组自动化单元测试与系统测试，
+在编译完成后，尤其是首次在新平台运行时，建议务必执行。
+
+运行集成测试：
+
+    % make check
+
+另有一组标准测试向量，出于体积原因未包含在本包中，
+但可从以下地址获取：
+https://opus-codec.org/docs/opus_testvectors-rfc8251.tar.gz
+
+将代码与这些测试向量进行比对：
+
+    % curl -OL https://opus-codec.org/docs/opus_testvectors-rfc8251.tar.gz
+    % tar -zxf opus_testvectors-rfc8251.tar.gz
+    % ./tests/run_vectors.sh ./ opus_newvectors 48000
+
+== 为 Windows 和替代构建系统编译 libopus ==
+
+请参阅 `cmake/README.md` 或 `meson/README.md`。
+
+== 可移植性说明 ==
+
+本实现默认使用浮点运算，也可通过设置 `--enable-fixed-point`
+（若使用 autoconf）或定义 `FIXED_POINT` 宏（若手动构建）
+编译为仅使用定点运算版本。
+定点实现的音质通常略低，并且在具备快速 FPU 的平台上更慢，
+因此通常只用于嵌入式环境。
+
+本实现可使用 C89 或 C99 编译器进行编译。
+虽然它不依赖 C89 或 C99 定义中的任何 _undefined behavior_（未定义行为），
+但在二进制补码架构上依赖一些常见的 _implementation-defined behavior_（实现定义行为）：
+
+o 负值右移与二进制补码算术一致，
+  即 a>>b 等价于
+  floor(a/(2^b))，
+
+o 将值转换为 N 位有符号整数时，
+  该值会按 2^N 取模，以落入该类型范围内，
+
+o 负数整数除法的结果向零截断，以及
+
+o 编译器提供 64 位整数类型（这是 C99 要求，
+  大多数 C89 编译器也支持）。

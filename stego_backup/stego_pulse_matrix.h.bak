@@ -1,0 +1,58 @@
+/***********************************************************************
+ SILK steganography — pulse value LSB embedding (C1) and
+ gain index LSB embedding (C3).
+***********************************************************************/
+#ifndef SILK_STEGO_PULSE_MATRIX_H
+#define SILK_STEGO_PULSE_MATRIX_H
+
+#include "typedef.h"
+#include "structs.h"
+
+#define SILK_STEGO_MAX_BITS 6
+#define SILK_STEGO_MAX_CARRIERS 10
+
+/* C1: pulse value LSB embedding (1 bit per non-zero pulse, ±1 magnitude). */
+void silk_stego_embed_pulse_lsb(
+    opus_int8                   pulses[],
+    opus_int                    frame_length,
+    opus_int                    stego_bits,
+    opus_int                    stego_nbits,
+    opus_int                    *applied_bits_out,
+    opus_int                    *applied_nbits_out
+);
+
+void silk_stego_extract_pulse_lsb(
+    const opus_int16            pulses[],
+    opus_int                    frame_length,
+    opus_int                    *bits_out,
+    opus_int                    *nbits_out
+);
+
+/* C3: gain index LSB embedding (1 bit per subframe, ±1). */
+void silk_stego_embed_mixed(
+    opus_int8                   *pulses,
+    SideInfoIndices             *psIndices,
+    opus_int                    frame_length,
+    opus_int                    fs_kHz,
+    opus_int                    nb_subfr,
+    opus_int                    signalType,
+    opus_int                    condCoding,
+    opus_int                    lag,
+    opus_int                    stego_bits,
+    opus_int                    stego_nbits,
+    opus_int                    *applied_bits_out,
+    opus_int                    *applied_nbits_out
+);
+
+void silk_stego_extract_mixed(
+    const opus_int8             *pulses,
+    const SideInfoIndices       *psIndices,
+    opus_int                    frame_length,
+    opus_int                    fs_kHz,
+    opus_int                    nb_subfr,
+    opus_int                    signalType,
+    opus_int                    *bits_out,
+    opus_int                    *nbits_out
+);
+
+#endif /* SILK_STEGO_PULSE_MATRIX_H */

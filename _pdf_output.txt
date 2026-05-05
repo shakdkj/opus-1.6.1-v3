@@ -1,0 +1,1130 @@
+﻿
+=== Page 1 ===
+ 
+Covert Communication over VoIP with Hyperchaotic 
+Rubik's Cube-Based Steganography 
+ 
+Jinghui Peng, Chin-Chen Chang, Fellow, IEEE 
+ 
+  
+Abstract—Voice over Internet Protocol (VoIP) provides a 
+crucial 
+cover 
+object 
+for 
+secure 
+real-time 
+streaming 
+steganography. Conventional VoIP steganography methods often 
+fall short of Kerckhoffs' principle, rendering them vulnerable 
+when the steganographic algorithm is known. This study 
+introduces a novel steganographic scheme that leverages the 
+complex transformation space of Rubik's Cube and hyperchaos 
+theory to enhance security and embedding capacity in covert 
+VoIP communications. By generating a random Rubik's Cube 
+matrix state using hyperchaotic sequences, the scheme ensures a 
+high degree of randomness and unpredictability, thereby 
+providing 
+robust 
+confidentiality. 
+Theoretical 
+analysis 
+of 
+steganographic security proves that the proposed method for 
+covert VoIP communications is secure, as it adheres to 
+Kerckhoffs' principle, utilises the robustness of hyperchaotic 
+sequences, and resists exhaustive attacks. The effectiveness of the 
+steganographic algorithm was examined through performance 
+measurements, revealing minimal impact on real-time VoIP 
+communications in terms of imperceptibility, speech quality, and 
+signal distortion. Security tests conducted using the ANOVA 
+method further validate the scheme's resilience against 
+steganalysis, demonstrating that it is statistically undetectable 
+with a larger embedding capacity of 16 kbps. 
+ 
+Index Terms—covert communications, hyperchaos, matrix 
+methods, Rubik's Cube, VoIP 
+ 
+I. INTRODUCTION 
+OIP streaming provides an ideal dynamic hidden 
+carrier for covert communication. The packets of 
+VoIP generally exhibit high redundancy, which 
+enables the embedding of substantial amounts of secret data. 
+Furthermore, the brief connection duration makes it challenging 
+to detect the embedded data within the dynamic packets, thus 
+providing a higher level of security. The complexity and 
+confidentiality of steganography directly impact the security of 
+covert VoIP communications.  
+However, most conventional VoIP steganography methods 
+do not meet Kerckhoffs' principle, making them vulnerable to 
+ 
+Manuscript received Nov 1, 2025. This work was supported in part by the 
+Education Department of Guangdong Province under Grant 2021KTSCX063，
+Special topic of basic and applied basic research in Guangzhou under Grant 
+SL2023A04J01043, Guangdong Basic and Applied Basic Research Regional 
+Joint Foundation under Grant 2022A1515110693 and GPNU Science 
+Foundation under Grant 2021SDKYA 025. 
+Jinghui Peng is with the School of Cyber Security, Guangdong Polytechnic 
+Normal University, Guangzhou 510665, Guangdong Province, China. (E-mail: 
+jinghuipeng@gpnu.edu.cn). 
+Chin-Chen Chang is with the Department of Information Engineering and 
+Computer Science, Feng Chia University, Taichung 40724, Taiwan, China. 
+(E-mail: alan3c@gmail.com) 
+attacks when the steganographic algorithm is not kept secret. 
+Information hiding techniques based on matrix methods 
+provide a new approach to address this issue. The Rubik's 
+Cube, also known as magic cube, due to its unique internal 
+structure, the blocks on each face will move to another 
+position in a certain pattern under specific rotation movements. 
+A standard 3x3 Rubik's Cube consists of 26 sub-blocks and 
+one center block with a total of 64 intersection points and over 
+40 thousand edge-corner sub-cube arrangements and nearly 
+200 million edge sub-cube arrangements. There are four ways 
+to rotate a certain layer of the Rubik's Cube clockwise; If the 
+Rubik's Cube is rotated clockwise by only 90 degrees without 
+any other restrictions, there will be 9 ways of rotation. A 
+standard 3x3 Rubik's Cube has approximately 4.32×10^19 
+states. Due to its vast transformation space that makes it 
+resistant against steganalysis, this study will explore the 
+application of Rubik's Cube based matrices to VoIP streaming 
+steganography. 
+Chaos theory is a branch in mathematics and physics used 
+to study the behavior characteristics of nonlinear dynamic 
+systems. Chaos exhibits unique nonlinear phenomena with 
+good pseudo-random properties and unpredictability which 
+make it highly applicable in information security. Hyperchaos 
+is a new method for studying nonlinear sequences or events 
+through simulation, prediction, and computation. Compared 
+with lower dimensional chaos mapping, high-dimensional 
+hyperchaos have more positive Lyapunov exponents, higher 
+complexity, randomness, and better unpredictability. A 
+hyperchaotic sequence can be generated with only one 
+mapping formula and initial value without needing storage for 
+individual sequence points’ values. Using hyperchaos 
+computation-generated random sequences controlling random 
+state changes in Rubik’s cube can be utilized in VoIP 
+steganography, which serves as motivation behind this study. 
+This study seeks to explore the potential of h
+...(truncated, 5745 chars)
+=== Page 2 ===
+ 
+b) 
+The security of the proposed scheme is analyzed 
+from both theoretical and experimental perspectives. The 
+findings show that the scheme effectively enhances the 
+embedding 
+capacity 
+and 
+security 
+of 
+covert 
+VoIP 
+communication systems. 
+c) 
+Security tests are conducted using the ANOVA 
+method rather than conventional testing approaches. 
+The structure of this paper is as follows. Section II delivers 
+an overview of related research. Section III elaborates on our 
+proposed hyperchaotic Rubik’s cube-based covert VoIP 
+communications scheme. The security aspects of the new 
+algorithm are analyzed in Section IV. Section V presents 
+experiments, 
+including 
+performance 
+and 
+statistical 
+undetectability analysis, along with a thorough discussion of 
+the results. The final section summarizes the conclusions of 
+this paper. 
+II. RELATED WORK 
+As streaming media becomes increasingly prevalent on the 
+Internet and within the Internet of Things (IoT), using it as a 
+carrier for covert communication has garnered significant 
+interest from researchers. Information hiding techniques based 
+on static carriers have become well-established, including text, 
+image, audio and video steganography [1]. Currently, 
+steganographic algorithms for VoIP streaming media have 
+become a focus of covert communication research. Huang et 
+al. developed an algorithm that leverages the pseudo-white 
+noise characteristics in silent segments to embed secret data 
+into speech parameters of inactive frames within VoIP streams 
+encoded by the G.723.1 [2]. Mazurczyk et al. employed VoIP 
+voice data, protocol information, and packet spacing to 
+facilitate covert communication, utilizing the statistical 
+distribution features of VoIP voice data streams [3]. Tian et al. 
+proposed an adaptive LSB steganographic method based on 
+quantifiable performance grading [4]. Kohls et al. introduced a 
+robust speech steganography algorithm designed for use with 
+Skype [5]. Saenger et al. achieved covert communication by 
+embedding information into silent packets through active 
+voice detection and silence encoding mechanisms in VoIP 
+communication 
+[6]. 
+Mustafa 
+proposed 
+a 
+covert 
+communication mechanism based on WhatsApp in mobile 
+devices [7]. 
+Currently, research on covert communications using 
+streaming media mainly focuses on three methods: TCP/IP 
+channel embedding method; Payload LSB embedding method; 
+Codec parameter permutation method [8]. Channel-based 
+embedding methods generally use blank or redundant fields in 
+protocol headers for steganography or modulate data packets 
+to 
+achieve 
+stenography 
+[9]. 
+Such 
+methods 
+require 
+modification of some information fields in the protocol header 
+which may be easily blocked and filtered by high-intelligence 
+routers or network devices leading to potential impact on 
+network service quality thus making it difficult to meet 
+reliability requirements for information security systems. 
+Payload LSB embedding is currently a commonly used 
+approach for VoIP covert communications. Steganographic 
+methods based on modifying speech parameters replace the 
+least significant bits (LSB) within speech data [10]. The LSB 
+method is relatively simple with large capacity but due to its 
+significant modification amount made to the carrier it exhibits 
+relatively poor imperceptibility and detectability properties. 
+Therefore, researchers have proposed some adaptive LSB 
+methods such as those based on quantifiable performance 
+grading [3]. One method for steganography based on speech 
+codec 
+parameter 
+permutation 
+is 
+Quantization 
+Index 
+Modulation (QIM). The QIM method divides the codebook 
+according to the speech coding rules, and modifies the 
+encoding parameters when embedding secret information. 
+Chen and Wornell first introduced QIM [11]. Huang et al. 
+proposed an optimal codebook partitioning method for 
+adaptive codebook parameters in G.723.1 speech coding, and 
+later further improved their method [12]. These methods may 
+be recognized and filtered by artificial intelligence detectors, 
+making it difficult to meet the integrity requirements of 
+information security systems when embedding confidential bit 
+streams in speech parameters. In addition, there are some 
+methods that utilize redundancies existing in certain 
+characteristics of entire VoIP packets. For example, Deepika 
+and 
+Saravanan 
+implemented 
+VoIP 
+steganography 
+by 
+embedding secret data into audio packets using a non-
+overlapping approach [13], but did not use a key to protect the 
+steganographic system. 
+Chaos theory was applied to cryptography earlier and has 
+been well used in computer image encryption processing. It 
+can also be applied to encryption algorithms, hash algorithms, 
+learning machine algorithms, protocol security authentication. 
+By using optical chaos technology, indoor infrared wireless 
+communication can securely transmit information at a rate of 
+several hundred bits per second. The chaotic properties of the 
+host s
+...(truncated, 6411 chars)
+=== Page 3 ===
+ 
+[21]. They also reported a (2, 3) secret image sharing method 
+using a fractal matrix that is fully reversible and more secure 
+[22]. Liu et al. introduced a visual secret sharing (VSS) 
+method based on the turtle shell structure, splitting the secret 
+data into two meaningful components [23]. Jiang et al. 
+developed a novel RDH scheme leveraging the TS matrix 
+characteristics [24]. Li et al. introduced a visual secret sharing 
+method employing a TSSM that offers reversibility and 
+authentication [25]. 
+Wang et al. developed a method to accelerate embedding by 
+extending the matrix, enhancing both embedding efficiency 
+and speed in steganography while significantly reducing 
+computational complexity, making it more suitable for real-
+time systems [26]. Sevierda et al. introduced a data hiding 
+technique that integrates image encryption based on the magic 
+cube principle with least significant bit (LSB) substitution to 
+ensure information security while preserving high image 
+quality [27]. Ko et al. proposed an image steganography 
+method that employs modular arithmetic and magic cubes, 
+where partial secret message bits are converted to decimal, 
+mapped into a predefined magic cube, and then embedded into 
+the cover image using modular arithmetic [28]. Vandana et al. 
+investigated a key management approach, comparing 
+combined AES-ECC and LSB algorithms with a new 
+confusion technique using magic cubes to enhance image data 
+protection and secure communication [29]. Patel et al. 
+analyzed the performance of combined edge detector schemes 
+and magic cube-based steganographic techniques. evaluating 
+their effectiveness in concealing high payload information in 
+digital images, comparing their performance [30]. Lee et al. 
+proposed an algorithm utilizing a three-dimensional matrix for 
+image information hiding [31]. 
+Most of the existing research on matrix methods focuses on 
+image information hiding, and further research is needed on 
+matrix steganography methods for VoIP streaming media. 
+There are also issues regarding how to ensure the randomness 
+of the initial state of the matrix as well as confidentiality of 
+hidden information. This paper explores a steganographic 
+method 
+based 
+on 
+hyperchaotic 
+magic 
+cubes, 
+where 
+hyperchaotic computation provides randomness for the initial 
+state of the magic cube, thereby ensuring confidentiality of 
+hidden message. 
+III. PROPOSED HYPERCHAOTIC RUBIK’S CUBE-BASED COVERT 
+VOIP COMMUNICATIONS SCHEME  
+The proposed covert VoIP communications scheme, based on 
+hyperchaotic 
+Rubik’s 
+cube 
+steganography, 
+combines 
+steganography and cryptography to ensure information security. 
+The covert VoIP communications are realized by embedding 
+encrypted secret message into VoIP streams. The random 
+sequence generated by the Rossler hyperchaotic system controls 
+the rotation of the third-order Rubik's Cube, and then embeds 
+secret information into the VoIP stream carrier based on the 
+three-dimensional coordinate matrix information corresponding 
+to the 64 points in the Rubik's Cube. 
+VoIP communication consists of a signaling phase and a 
+session phase. During the signaling phase, a connection is set up 
+between the parties using the SIP signaling protocol. In the 
+session phase, real-time VoIP communication is facilitated by 
+media protocols, while the IP protocol handles the voice 
+transmission over IP networks. To ensure low latency and 
+minimal packet loss, the system uses the connectionless UDP 
+instead of the TCP. 
+In order not to affect connection establishment between 
+communication parties using SIP signaling protocol in the 
+signaling phase, the initial parameters of hyperchaotic sequences 
+are securely transmitted between communicating parties during 
+the session phase after establishing a connection in this study. A 
+dynamic key-distribution algorithm proposed in our previous 
+study [32] is adopted in this study for distributing initial 
+parameters. The proposed covert VoIP communications model is 
+depicted in Figure 1. 
+ 
+ 
+Fig. 1. Model of covert VoIP Communications. 
+ 
+In the proposed scheme, both communicating parties utilize 
+the same initial parameters to generate a random walk 
+sequence using the Rossler hyperchaotic system. Subsequently, 
+the generated hyperchaotic random sequence is used to control 
+the rotation of a third-order Rubik's cube. The resulting cube 
+is then placed into a three-dimensional coordinate system, 
+yielding a matrix with 64 randomly distributed points from the 
+cube. Finally, the secret message (6-digit binary as a group) is 
+embedded into the coordinates of adjacent 3 sample points in 
+VoIP stream, ensuring confidentiality of the hidden 
+information in covert VoIP communications, as shown in 
+Figure 2. 
+ 
+ 
+
+=== Page 4 ===
+ 
+Fig. 2. Schematic diagram of VoIP steganography based on 
+hyperchaotic Rubik's Cube. 
+ 
+A. Generation of Hyperchaotic Random Sequences 
+Chaos is a seemingly random phenomenon found in nonlinear 
+deterministic systems, where the unpredictability of random 
+sequences arises from the inherent properties of chaotic 
+dynamics. Therefore, a large number of deterministic random 
+sequences similar to noise can be obtained from chaotic 
+mappings. High-dimensional hyperchaos has more positive 
+Lyapunov exponents, higher complexity, randomness, and 
+better unpredictability. In this study, the Rossler hyperchaotic 
+system is used to generate "random walk" sequences. 
+Assuming a stationary and ergodic streaming media increment 
+process, the number of bits (U) in the interval (0, t] is defined as 
+𝑈(𝑡) = 𝑟𝑡+ 𝜎2𝐺(𝑡).
+(1) 
+ 
+Here r is the arrival rate of streaming media packets, 2 is 
+the variance parameter, G(t) is a Gaussian process with a mean 
+of zero and a variance of t2D, where D is the Lyapunov 
+dimension used in hyperchaotic calculations, which can be 
+expressed as Var (U1 + U2 + … +Un) = |t|2D. 
+For the Rossler hyperchaotic system, its component states 
+changing over time t can be described by a set of four-
+dimensional differential equations: 
+{
+ 
+ 
+ 
+ 
+ 
+ 𝑑𝑥1
+𝑑𝑡= −𝑥2 −𝑥3
+𝑑𝑥2
+𝑑𝑡= 𝑥1 + 𝑎𝑥2 + 𝑥4
+𝑑𝑥3
+𝑑𝑡= 𝑏+ 𝑥1𝑥3
+𝑑𝑥4
+𝑑𝑡= 𝑐𝑥4 −𝑑𝑥3
+.
+(2) 
+ 
+When parameters a = 0.25, b = 3.0, c = 0.05, d = 0.5 are 
+calculated for chaos attractor with two positive Lyapunov 
+exponents 1 = 0.16 and 2 = 0.03 ，a zero Lyapunov 
+exponent 3 = 0.000，and a negative Lyapunov exponent 4 = 
+-39.000. 
+The 
+Lyapunov 
+dimension 
+for 
+this 
+Rossler 
+hyperchaotic system is: 
+𝐷= 𝑗+
+1
+|𝜆𝑗+1| ∑𝜆𝑖
+𝑗
+𝑖=1
+= 3 +
+(𝜆1 + 𝜆2 + 𝜆3)
+|𝜆4|
+= 3.0049. (3) 
+          
+It can be seen that the Lyapunov dimension of this system is 
+fractional dimensional; thus, it belongs to a hyperchaotic 
+system. Its attractors are shown in Figure 3. 
+ 
+Fig. 3. Rossler hyperchaotic attractor phase diagram. 
+ 
+To overcome the impact of the transition process, this 
+algorithm will discard the first 2000 iterations. n is the length 
+of the generated Rossler hyper chaotic random sequence. 
+The Rossler hyperchaotic random sequence generation 
+algorithm designed in this paper is as follows: 
+1) 
+Initialize the Rossler mapping, set initial parameters 
+x1, x2, x3, x4, a, b, c, d and n; 
+2) 
+Perform 2000 initial iterations on the Rossler 
+mapping system; 
+3) 
+Take out the 4th to 6th significant digits of xi to 
+obtain an integer yi; 
+4) 
+Calculate Ri = yi mod18; 
+5) 
+Repeat steps (3)-(5) for n times to obtain a random 
+sequence{𝑅1, 𝑅2, … , 𝑅𝑛}(0 ≤𝑅𝑖≤17)with a length of n. 
+ 
+B. Control of Rubik's Cube Rotation and Scrambling 
+In this paper, we use a 3x3 Rubik's Cube as the basic model 
+for matrix mapping transformations. The 3x3 Rubik's Cube is 
+a special type of cube, consisting of 26 sub-blocks, with 8 
+vertices and 12 edges that can be rotated along each axis. 
+There is a total of 64 intersection points in the 3x3 Rubik's 
+Cube. 
+This study first securely transmits the initial parameters of 
+the Rossler hyperchaotic sequence and negotiate the initial 
+state of the Rubik's Cube during the conversation phase. Then, 
+the generated hyper-chaotic random sequence is used to 
+control the rotation of a third-order Rubik's Cube. The rotation 
+method designed in this study includes 18 types, including 9 
+forward 
+(clockwise) 
+rotation 
+modes 
+and 
+9 
+reverse 
+(counterclockwise) rotation modes. 𝐹𝑀, 𝑅𝑀, 𝐵𝑀, 𝐿𝑀, 𝑈𝑀, 𝐷𝑀 
+represent the six faces of a third-order Rubik's Cube 
+respectively. 𝑈0,1、𝑈0,2、𝑈0,3represent clockwise rotations of 
+the first layer from top to bottom; 𝐿0,1、𝐿0,2、𝐿0,3 represent 
+clockwise rotations from left to right for the first layer through 
+third layer; 𝐹0,1 、𝐹0,2 、𝐹0,3  represents clockwise rotations 
+from front to back for the first through third layers; similarly 
+for counterclockwise rotations. Integers 0-17 are used to 
+represent 18 different rotation methods and mapping each 
+rotation method to a corresponding number using a function g. 
+We construct a function g and introduce a parameter d, where 
+d values of 0 and 1 represent clockwise and counterclockwise 
+rotation, respectively. 
+𝑔(𝑋𝑑,𝑛) = 9𝑑+ 3(𝑖−1) + (𝑛−1),
+(4) 
+ 
+where:  
+• X represents the direction of rotation (U, L, F);  
+
+=== Page 5 ===
+ 
+• d represents the direction of rotation (0 for clockwise, 1 for 
+counterclockwise);  
+• i represents the corresponding sequence number for X: 
+U→1, L→2, F→3; 
+• n represents the number of layers to rotate (1, 2, 3).  
+ 
+The specific mapping relationship is as follows: 
+For U (rotation from top to bottom):  
+Clockwise:  
+𝑔(𝑈0,1) = 9 ⋅0 + 3(1 −1) + (1 −1) = 0, 
+𝑔(𝑈0,2) = 9 ⋅0 + 3(1 −1) + (2 −1) = 1, 
+and         𝑔(𝑈0,3) = 9 ⋅0 + 3(1 −1) + (3 −1) = 2.  
+Counterclockwise: 
+𝑔(𝑈1,1) = 9 ⋅1 + 3(1 −1) + (1 −1) = 9, 
+𝑔(𝑈1,2) = 9 ⋅1 + 3(1 −1) + (2 −1) = 10, 
+and       𝑔(𝑈1,3) = 9 ⋅1 + 3(1 −1) + (3 −1) = 11. 
+For L (rotation from left to right):  
+Clockwise: 
+𝑔(𝐿0,1) = 9 ⋅0 + 3(2 −1) + (1 −1) = 3, 
+𝑔(𝐿0,2) = 9 ⋅0 + 3(2 −1) + (2 −1) = 4, 
+and         𝑔(𝐿0,3) = 9 ⋅0 + 3(2 −1) + (3 −1) = 5. 
+Counterclockwise:  
+𝑔(𝐿1,1) = 9 ⋅1 + 3(2 −1) + (1 −1) = 12, 
+𝑔(𝐿1,2) = 9 ⋅1 + 3(2 −1) + (2 −1) = 13, 
+and         𝑔(𝐿1,3) = 9 ⋅1 + 3(2 −1) + (3 −1) = 14. 
+For F (rotation from front to back):  
+Clockwise:  
+𝑔(𝐹0,1) = 9 ⋅0 + 3(3 −1) + (1 −1) = 6, 
+𝑔(𝐹0,2) = 9 ⋅0 + 3(3 −1) + (2 −1) = 7, 
+and         𝑔(𝐹0,3) = 9 ⋅0 + 3(3 −1) + (3 −1) = 8. 
+Counterclockwise:  
+𝑔(𝐹1,1) = 9 ⋅1 + 3(3 −1) + (1 −1) = 15, 
+𝑔(𝐹1,2) = 9 ⋅1 + 3(3 −1) + (2 −1) = 16, 
+and         𝑔(𝐹1,3) = 9 ⋅1 + 3(3 −1) + (3 −1) = 17. 
+ 
+By rotating the Rubik's Cube n times using the rotation 
+method corresponding to the value of 𝑅𝑖 in the Rossler 
+hyperchaotic random sequence{𝑅1, 𝑅2, … , 𝑅𝑛}(0 ≤𝑅𝑖≤17), 
+the Rossler hyperchaotic Rubik's Cube state is obtained. 
+ 
+C. Embedding and Extraction using Rubik's Cube Matrix 
+Steganography 
+Place the Rossler hyperchaotic magic cube state into a three-
+dimensional coordinate system, resulting in a matrix with 64 
+points M (x, y, z) (0 ≤𝑀(𝑥, 𝑦, 𝑧) ≤63) randomly distributed 
+within the magic cube (as shown in Figure 4), with each point's 
+horizontal, vertical, and depth coordinates ranging from 0 to 3.  
+1) Embedding Process 
+First, the message to be hidden is encrypted using the AES 
+algorithm. The encrypted data is then segmented and 
+embedded into VoIP stream packets. In this system, each data 
+packet is sized at 4096 bytes. The length of the secret message 
+(LoM) is embedded in the first 16 bytes of the initial VoIP 
+data packet, while the rest of the first packet, along with 
+subsequent  packets, is used for the secret message itself. 
+The encrypted secret information is grouped in sets of six 
+binary digits. Each set of six binary digits from the 
+confidential information can be converted into a decimal 
+number (range 0-63), which has a unique coordinate 
+correspondence within a 4*4*4 three-dimensional matrix.  
+The coordinates corresponding to each group of secret 
+message (six binary digits per group) are embedded into last 
+two bits of adjacent samples in VoIP stream at three sampling 
+points sequentially. The process is as follows: 
+a) Select coordinates; iterate through the pre-defined 64 
+coordinates (xi, yi, zi);  
+b) Embed LoM into the initial VoIP data packet  and set 
+length = LoM;  
+c) Obtain sampling points; take three adjacent speech 
+sampling points C1, C2, C3 from the carrier stream; 
+d) Take out 6-bit binary data s1s2s3s4s5s6  from the 
+encrypted secret data, calculate the corresponding 
+decimal number s (range 0-63), map it to the 
+coordinate M （b1b2, b3b4, b5b6 ） in a three-
+dimensional hyperchaotic cube matrix.  
+e) Embed secret data; embed these 6 bits of data into the 
+last two bits of each of the adjacent three audio 
+sampling points:  
+𝑆1 = (𝐶1&0𝑥𝐹𝐶) ∣𝑏1𝑏2, 
+𝑆2 = (𝐶2&0𝑥𝐹𝐶) ∣𝑏3𝑏4, 
+𝑆3 = (𝐶3&0𝑥𝐹𝐶) ∣𝑏5𝑏6, 
+where “&” is bitwise AND operation, 0xFC is a mask 
+used to clear out the last two bits, “|” is bitwise OR 
+operation used for embedding data. 
+f) 
+length = length − 6.  
+g) Repeat steps (3)-(6) until length = 0.  
+For example, for an encrypted secret message "100011" 
+corresponding to decimal number 35, it maps to coordinates 
+(3,3,1) in a three-dimensional matrix and then embeds 
+respective three-dimensional coordinates into the last two bits 
+of adjacent three sampling points in VoIP stream as shown in 
+Figure 4. 
+ 
+
+=== Page 6 ===
+ 
+ 
+Fig. 4. Illustration of an embedding process 
+ 
+2) Extraction Process 
+Extracting the hidden message from stego VoIP streams is 
+the reverse process of embedding. The recipient uses the 
+corresponding extraction algorithm to retrieve the AES-
+encrypted data and then decrypts it with the symmetric key to 
+recover the original information from the stego VoIP streams. 
+The steps for the recipient to extract the secret data are as 
+follows: 
+a) Coordinate 
+selection: 
+Traverse 
+64 
+pre-defined 
+coordinates (xi, yi, zi). 
+b) Extracting LoM from the initial packet and let 
+length=LoM.  
+c) Obtaining sampling points: Get adjacent three speech 
+sampling points（S1, S2, S3）from the stego stream. 
+d) Extracting the hidden information: Extract 6 bits of 
+binary data from last two bits of each of three speech 
+sampling points:  
+𝑏1𝑏2 = 𝑆1&0𝑥03, 
+𝑏3𝑏4 = 𝑆2&0𝑥03, 
+and 
+𝑏5𝑏6 = 𝑆3&0𝑥03. 
+e) Convert coordinates （b1b2, b3b4, b5b6 ） into 
+decimal value s (range 0-63), corresponding to a six-
+bit binary number in a three-dimensional hyper 
+chaotic magic cube matrix. 
+f) 
+length = length − 6. 
+g) Repeat steps (3)-(6), until length = 0. 
+h) Combine data: Combine extracted 6-bit binary data 
+into a segment of secret message. 
+IV. SECURITY ANALYSIS 
+This section provides a theoretical analysis of the security of 
+the 
+proposed 
+hyperchaotic 
+Rubik’s 
+Cube-based 
+steganographic algorithm for covert communications over 
+VoIP. 
+A. Kerckhoffs's Principle 
+The principle of Kerckhoffs, named after Auguste 
+Kerckhoffs in the 19th century, states that even if all details of 
+a cryptographic system are known to an adversary, as long as 
+the key remains secret, the system should still be secure. 
+Currently, most traditional VoIP steganography methods do 
+not meet this principle and are vulnerable to attacks when the 
+steganographic algorithm is not kept confidential. 
+In the proposed algorithm in this paper, the 64 points of a 
+Rubik's cube are controlled by a hyperchaotic sequence to 
+provide high complexity and randomness. Even if an attacker 
+knows 
+the 
+hyperchaotic Rubik's 
+cube 
+steganographic 
+algorithm, without knowledge of the initial parameters of the 
+hyperchaotic system, they cannot obtain its state. With over 
+4.32×10^19 possible states for a Rubik's cube, it is extremely 
+difficult for current computing power to crack such a system 
+in real-time VoIP communication. The key to this algorithm 
+lies in how to embed secret message into the sampling points 
+of VoIP streams. Even if an attacker knows this mechanism, 
+they still cannot access confidential information as long as the 
+key (the specific state of the Rubik's cube and its 
+corresponding three-dimensional coordinates) remains secret. 
+The state of the Rubik's cube can be generated using a 
+hyperchaotic sequence which only requires one seed (initial 
+parameter) for generation. This eliminates the need to transmit 
+or remember the entire distribution of the Rubik's cube; only 
+transmitting one seed value is necessary. Additionally, this 
+algorithm can be applied to any VoIP streams with high 
+applicability; it is easy to operate and does not require 
+complex 
+calculations 
+but 
+mainly 
+relies 
+on 
+software 
+implementation without additional hardware costs. Therefore, 
+this algorithm meets all requirements set forth by Kerckhoffs’s 
+Principle. 
+ 
+B. Security of Hyperchaotic 
+When employing hyperchaotic systems in steganography 
+algorithms, it is essential to use secure hyperchaotic systems 
+to ensure the algorithm's security. Due to the information loss 
+during iteration in hyperchaotic systems, the information 
+entropy of the hyperchaotic sequence gradually approaches 
+zero, making it impossible to correctly predict the long-term 
+behavior of the 
+hyperchaotic sequence. In addition, 
+hyperchaotic synchronization is crucial for achieving correct 
+decryption of information. Since computer systems can 
+accurately reproduce all initial states of a super-chaotic 
+iterative 
+system, 
+a 
+synchronization 
+algorithm 
+for 
+a 
+hyperchaotic iterative system can be implemented using the 
+concept of computer process synchronization, where startup 
+parameters and synchronization strategies serve as keys.  
+When parameters a = 0.25, b = 3.0, c = 0.05 and d = 0.5 are 
+used in Rossler's hyperchaotic system, its Lyapunov 
+dimension is calculated as 3.0049; at this point Rossler 
+mapping exhibits a state of hyperchaos (as shown in Figure 5). 
+The hyper chaotic sequence {𝑅1, 𝑅2, … , 𝑅𝑛} generated under 
+initial conditions by Rossler mapping is non-periodic and non-
+convergent and highly sensitive to initial values.   
+ 
+Fig. 5. 3D Plot of Rossler 4D system. 
+ 
+For VoIP covert communication, both sensitivity to initial 
+
+=== Page 7 ===
+ 
+values and randomness of the signal are required. The higher 
+the sensitivity and randomness, the greater the security of the 
+communication system. According to the properties of Rossler 
+mapping, it is known that a chaotic sequence generated by 
+Rossler mapping with parameters a = 0.25, b = 3.0, c = 0.05, 
+d = 0.5 has a constant mean and zero cross-correlation 
+function, similar to the statistical characteristics of zero-mean 
+white noise. The cross-correlation of hyperchaotic sequences 
+is zero, and the probability density of the system is uniformly 
+distributed, which can resist correlation analysis and is an 
+ideal pseudo-random sequence. 
+Rossler 
+hyperchaotic 
+systems 
+exhibit 
+robustness, 
+maintaining their chaotic state under small parameter 
+perturbations. In addition, Rossler chaotic systems have a 
+large parameter set, that is, a huge space of parameters and 
+initial values. Slight differences in initial values will produce 
+completely different chaotic sequences. If the initial 
+conditions have only limited precision, as time increases, the 
+prediction accuracy of their states will become increasingly 
+poor until ultimately unacceptable - known as long-term 
+unpredictability.  
+Hyperchaotic covert communication has a high ability to 
+resist steganalysis because attackers cannot obtain complete 
+original data or reconstruct the original equation or regression 
+mapping that generates hyperchaotic signals through neural 
+networks or regression methods. Therefore, hyperchaotic 
+covert communication signals are difficult to attack and can be 
+applied to highly secure covert VoIP communication systems. 
+ 
+C. Exhaustive Attack 
+In this proposed steganographic algorithm, the distribution 
+of the 64 points on the Rubik's Cube in three-dimensional 
+coordinate system is controlled and generated by hyperchaotic 
+random sequence. This means that the position of each point 
+on the Rubik's Cube is unique and unpredictable. For an 
+attacker, it is extremely difficult to exhaust all possible 
+distribution combinations, and it is impossible to crack it 
+through exhaustive methods within a constrained timeframe. 
+The total number of states for the Rubik's Cube is: 
+𝑁= 8! × 38 × 12! × 212
+3 × 2 × 2
+= 4.32 × 1019.
+(5) 
+There are M ways to rotate the Rubik's Cube. Since any 
+third-order Rubik's Cube can be restored within 20 steps, the 
+following state transition diagram is established: 
+1) It contains N nodes;  
+2) Each node is connected to M other nodes;  
+3) All nodes are interconnected.  
+Constructing a Markov chain: each state transitions to one 
+of its adjacent M states with a probability of  
+1
+𝑀, and let 𝑃𝐴,𝐵
+(𝑛) 
+represent the probability of transitioning from state A to state 
+B after n steps.  
+Since each state A in Markov chain is recurrent, i.e., 
+∑
+𝑃𝐴,𝐴
+(𝑛)
+∞
+𝑛=1
+= +∞, for any two states A and B, there must exist 
+a path from 𝐴→𝐴1 →⋯→𝐴𝑘→𝐵such that  
+∑𝑃𝐴,𝐵
+(𝑛)
+∞
+𝑛=1
+≥𝑃𝐴,𝐴1𝑃𝐴1,𝐴2 ⋯𝑃𝐴𝑘,𝐵∑𝑃𝐵,𝐵
+(𝑛−𝑘)
+∞
+𝑛=𝑘
+ 
+= 𝑃𝐴,𝐴1𝑃𝐴1,𝐴2 ⋯𝑃𝐴𝑘,𝐵∑𝑃𝐵,𝐵
+(𝑛)
+∞
+𝑛=0
+= +∞.
+(6) 
+Therefore, starting from any state of the Rubik's Cube, the 
+probability of transitioning to another state is 100%, including 
+returning to original state X.  
+By mapping partial information from sampling points onto 
+various points on the Rubik's Cube, when scrambling or 
+rotating it, there will be a 100% chance of restoration; 
+however, the expected number of steps for restoring becomes 
+infinite due to its total states being 4.32 × 1019 . Using 
+exhaustive attacks for calculation purposes becomes extremely 
+difficult. Even if attackers can obtain some least significant 
+bits of information, they still need to know how these bits are 
+mapped back into points in three-dimensional coordinate 
+system and their specific positions on the Rubik’s cube. 
+Therefore, it is impossible to correctly obtain secret 
+information in real-time covert VoIP communication through 
+exhaustive attacks; hence using Rubik’s cube transformation 
+can ensure confidentiality for VoIP steganography. 
+V. RESULTS AND DISCUSSION 
+The findings of this study highlight the effectiveness and 
+security of the proposed hyperchaotic Rubik’s cube-based 
+covert VoIP communications scheme. Performance and 
+security were assessed through VoIP experiments, which 
+involved generating PESQ scores and SNR results. Each 
+experiment was repeated 12 times.   
+VoIP streams in PCM format encoded with the G.711 codec 
+served as cover objects in this system. The hidden message 
+was encrypted before embedding. The stego VoIP signals 
+were evaluated for imperceptibility, and the data embedding 
+capacity was calculated. 
+Each test involved embedding data in 8-second audio 
+segments, comprising 64,000 sampling points with 16 bits, 
+using the original speech as the reference. The hidden message 
+size was 16000 bytes, equivalent to roughly 2,147 words.  The 
+data embedding rate is 16 kbps. 
+ 
+A. Imperceptibility 
+The fundamental security of covert VoIP communication 
+depends on avoiding detection by attackers. T
+...(truncated, 5680 chars)
+=== Page 8 ===
+ 
+ 
+Fig. 6. Waveform of the original and stego VoIP streams. 
+ 
+Figure 7 presents the spectrograms of VoIP speech samples 
+in the frequency domain. A spectrogram represents the 
+frequency spectrum of sound over time. The figure illustrates  
+that the spectrograms of the VoIP streams with and without 
+hidden message have only slight differences. This indicates 
+that 
+the 
+proposed 
+hyperchaotic 
+Rubik’s 
+Cube-based 
+steganographic algorithm minimally affects the frequency 
+characteristics of the VoIP streams. These results align with 
+the waveform analysis shown in Figure 6. 
+ 
+ 
+Fig. 7. Spectrograms of the original and stego VoIP streams. 
+ 
+Figure 8 compares the mean PESQ values of the original 
+VoIP samples and the stego samples using hyperchaotic 
+Rubik’s cube-based steganography. The horizontal axis 
+represents the number of sample groups, each undergoing 12 
+repeated experiments to determine the mean PESQ value. As 
+shown in the figure, the experimental results indicate that the 
+PESQ value remains consistent, with scores close to 4.5. This 
+stability indicates that the new steganographic algorithm has 
+minimal impact on voice quality while enhancing the security 
+of the steganographic system, thereby ensuring secure and 
+robust covert VoIP communications.  
+ 
+Fig. 8. Mean PESQ values for the covert and stego VoIP 
+streams. 
+ 
+Figure 9 displays the mean SNR scores of the stego VoIP 
+streams using the proposed hyperchaotic Rubik’s Cube-based 
+steganographic algorithm, with the estimated value being 58, 
+indicating that covert VoIP communications employing the 
+proposed algorithm achieve excellent imperceptibility and a 
+high level of security. 
+ 
+Fig. 9. Mean SNR values for the stego VoIP streams. 
+ 
+Overall, the experimental results demonstrate that the 
+proposed hyperchaotic Rubik's Cube-based steganographic 
+algorithm 
+has 
+minimal 
+impact 
+on 
+real-time 
+VoIP 
+communication, including speech quality, signal distortion, 
+and imperceptibility. The differences in PESQ values and 
+SNR scores between VoIP streams with and without 
+embedding are negligible, rendering the distortion introduced 
+by the new algorithm nearly imperceptible. 
+ 
+
+=== Page 9 ===
+ 
+B. Statistical Undetectability Analysis 
+Steganographic communications seek to hide secret 
+messages within ordinary transmissions, such as VoIP. The 
+security of these systems is evaluated based on statistical 
+undetectability, which measures how difficult it is to detect 
+hidden messages within cover streams. A secure covert 
+communication system should be statistically undetectable, 
+ensuring that both human perception and computational 
+methods cannot differentiate between cover streams and stego 
+streams.  
+ANOVA was used in this study to evaluate the security of 
+the proposed hyperchaotic Rubik’s cube-based steganographic 
+algorithm. ANOVA, which stands for analysis of variance, is 
+used to test for differences in means between two or more 
+groups. It is commonly used to assess whether there are 
+significant differences between groups based on a categorical 
+variable. ANOVA can be used to test for differences between 
+groups, and to determine if there is an interaction between 
+groups.  
+ANOVA relies on three main assumptions: (1) Homogeneity 
+of variance; (2) The population follows normal distribution; (3) 
+Each sampling is independent.  
+The formula for calculating ANOVA is: 
+𝐹= (𝑀𝑆𝑏𝑒𝑡𝑤𝑒𝑒𝑛/𝑀𝑆𝑤𝑖𝑡ℎ𝑖𝑛),
+(7) 
+ 
+MSbetween is the mean square between groups, and 
+MSwithin is the mean square within groups. 
+The VoIP stream samples with and without embedding 
+message were tested by using ANOVA in this study, and 
+each sample containing 64,000 data points. The null 
+hypothesis stated no difference between VoIP stream samples, 
+while the alternative hypothesis posited a significant 
+difference. Steps in the ANOVA Test are as follows: 
+Step 1: Calculate the mean and variance of each sample. 
+Step 2: Calculate the grand mean. 
+Step 3: Calculate the between-group sum of squares (SSB) 
+and the within-group sum of squares (SSW). 
+Step 4: Calculate the degrees of freedom (df) for the F-
+distribution. 
+Step 5: Calculate the mean square values (MSB and MSW). 
+Step 6: Calculate the F-statistic. 
+Step 7: Determine the p-value and compare it to the 
+significance level. 
+Among the variables shown in Table 1, the P-value is 
+0.97795, which is greater than 0.05. This means that the null 
+hypothesis cannot be rejected, indicating no significant 
+differences between the VoIP samples. The results suggest 
+that ANOVA did not detect the steganography and the 
+proposed hyperchaotic Rubik’s cube-based steganographic 
+algorithm is statistically undetectable. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+TABLE I 
+UNDETECTABILITY ANALYSIS RESULTS USING ANOVA 
+ 
+Source of 
+Variation 
+SS 
+df 
+MS 
+F 
+P-
+value 
+F crit 
+Between 
+Groups 
+1455.
+64  
+1.00  
+1455.64  
+0.00076
+4 
+0.97795  
+3.84  
+Within 
+Groups 
+2.44E
++11 
+1.28E
++05 
+1.91E+06 
+- 
+- 
+- 
+Total 
+2.44E
++11 
+1.28E
++05 
+- 
+- 
+- 
+- 
+ 
+VI. CONCLUSIONS 
+A 
+hyperchaotic 
+Rubik’s 
+cube-based 
+covert 
+VoIP 
+communications scheme for realizing secure covert VoIP 
+communications has been devised in this study. The 
+theoretical security of the scheme has been analyzed, 
+including its adherence to Kerckhoffs' principle, the security 
+of hyperchaotic sequences, and resistance against exhaustive 
+attacks. Experimental results show that the proposed 
+steganographic scheme is statistically undetectable with 
+negligible signal distortion， achieving a larger embedding 
+capacity (16 kbps). This new algorithm provides improved 
+security in terms of the randomness of steganography. 
+Future research should investigate the effectiveness of 
+alternative matrix methods for covert VoIP communications. 
+ACKNOWLEDGMENT 
+This work was supported in part by the Education 
+Department 
+of 
+Guangdong 
+Province 
+under 
+Grant 
+2021KTSCX063，Special topic of basic and applied basic 
+research in Guangzhou under Grant SL2023A04J01043, 
+Guangdong Basic and Applied Basic Research Regional Joint 
+Foundation under Grant 2022A1515110693 and GPNU 
+Science Foundation under Grant 2021SDKYA 025. 
+REFERENCES 
+[1] W. Tang, Z. Zhou, B. Li, K.-K. R. Choo, and J. Huang, "Joint Cost 
+Learning and Payload Allocation with Image-wise Attention for Batch 
+Steganography," IEEE Transactions on Information Forensics and 
+Security, vol. 19, pp. 2826-2839, 2024. 
+[2] Y. F. Huang, S. Tang, and J. Yuan, "Steganography in Inactive Frames of 
+VoIP Streams Encoded by Source Codec," IEEE Transactions on 
+Information Forensics and Security, vol. 6, no. 2, pp. 296-306, Apr. 2011. 
+[3] W. Mazurczyk and K. Szczypiorski, "Steganography of VoIP Streams," 
+Springer-Verlag, 2008. 
+[4] H. Tian, J. Liu, and S. Li, "Improving Security of Quantization-Index-
+Modulation Steganography in Low Bit-Rate Speech Streams," Multimedia 
+Systems, vol. 20, no. 2, pp. 143-154, Feb. 2014. 
+[5] K. Kohls, T. Holz, D. Kolossa, et al., "Technical Report: SkypeLine 
+Robust Hidden Data Transmission for VoIP," in Proc. ACM Symposium 
+on Information, Computer and Communications Security (ASIACCS), 
+ACM, 2016. 
+[6] J. Saenger, W. Mazurczyk, J. Keller, et al., "VoIP Network Covert 
+Channels to Enhance Privacy
+...(truncated, 5232 chars)
+=== Page 10 ===
+ 
+American Journal of Engineering and Applied Sciences, vol. 6, no. 2, pp. 
+32-35, 2020. 
+[8] W. Stallings, Cryptography and Network Security: Principles and 
+Practice, 7th ed., Pearson, London, 2017, pp. 252-279. 
+[9] C. Liang, Y. A. Tan, X. Zhang, et al., "Building Packet Length Covert 
+Channel Over Mobile VoIP Traffics," Journal of Network & Computer 
+Applications, vol. 118, pp. 144-153, Sep. 2018. 
+[10] S. Tang, Y. Jiang, L. Zhang, et al., "Audio Steganography with AES for 
+Real-Time Covert Voice Over Internet Protocol Communications," Sci. 
+China Inf. Sci., vol. 57, pp. 1-14, 2014. 
+[11] B. Chen and G. W. Wornell, "Quantization Index Modulation: A Class of 
+Provably Good Methods for Digital Watermarking and Information 
+Embedding," IEEE Transactions on Information Theory, vol. 47, no. 4, pp. 
+1423-1443, May 2001. 
+[12] Y. F. Huang, H. Z. Tao, B. Xiao, et al., "Steganography in Low Bit-Rate 
+Speech Streams Based on Quantization Index Modulation Controlled by 
+Keys," Science China Technological Sciences, vol. 60, no. 10, pp. 1585-
+1596, Oct. 2017. 
+[13] S. Deepikaa and R. Saravanan, "Coverless VoIP Steganography Using 
+Hash and Hash," Cybernetics and Information Technologies, vol. 20, no. 
+3, pp. 39-47, 2020. 
+[14] M. A. El-Bendary et al., "Secure Wireless Image Communication Using 
+LSB Steganography and Chaotic Baker Ciphering," Wireless Personal 
+Communications: An International Journal, vol. 91, no. 3, pp. 1023-1049, 
+Dec. 2016. 
+[15] A. Sharif, M. Mollaeefar, et al., "A Novel Method for Digital Image 
+Steganography Based on a New Three-Dimensional Chaotic Map," 
+Multimedia Tools & Applications, vol. 76, no. 6, pp. 7849-7867, Mar. 
+2017. 
+[16] W. Zhang, S. Tang, et al., "Chaotic Stream Cipher-Based Secure Data 
+Communications Over Intelligent Transportation Network," International 
+Journal of Antennas and Propagation, pp. 1-12, 2015. 
+[17] C.-C. Chang, Y.-C. Chou, and T. D. Kieu, "An Information Hiding 
+Scheme Using Sudoku," in Proc. 2008 3rd International Conference on 
+Innovative Computing Information and Control, Dalian, China, 2008, pp. 
+17-17. 
+[18] T. S. Nguyen and C.-C. Chang, "A Reversible Data Hiding Scheme Based 
+on the Sudoku Technique," Displays, vol. 39, pp. 109-116, Oct. 2015. 
+[19] C.-C. Chang, Y. Liu, and T. S. Nguyen, "A Novel Turtle Shell Based 
+Scheme for Data Hiding," in Proc. 2014 Tenth International Conference 
+on Intelligent Information Hiding and Multimedia Signal Processing, 
+Kitakyushu, Japan, 2014, pp. 89-93. 
+[20] C.-C. Chang et al., "A Maze Matrix-Based Secret Image Sharing Scheme 
+with Cheater Detection," Sensors, vol. 20, no. 13, Art. no. 3802, Jul. 2020. 
+[21] K. Gao, J.-H. Horng, Y. Liu, and C.-C. Chang, "A Reversible Secret 
+Image Sharing Scheme Based on Stick Insect Matrix," IEEE Access, vol. 
+8, pp. 130405-130416, 2020. 
+[22] K. Gao, J.-H. Horng, and C.-C. Chang, "A Novel (2, 3) Reversible Secret 
+Image Sharing Based on Fractal Matrix," IEEE Access, vol. 8, pp. 
+174325-174341, 2020. 
+[23] Y. Liu and C.-C. Chang, "A Turtle Shell-Based Visual Secret Sharing 
+Scheme with Reversibility and Authentication," Multimedia Tools and 
+Applications, vol. 77, no. 19, pp. 25291-25306, Oct. 2018. 
+[24] J.-Y. Lin, J.-H. Horng, and C.-C. Chang, "A Reversible and Authenticable 
+Secret Sharing Scheme Using Dual Images," Multimedia Tools and 
+Applications, vol. 81, no. 22, pp. 17527-17545, Nov. 2022. 
+[25] X.-S. Li, C.-C. Chang, M.-X. He, et al., "A Lightweight Authenticable 
+Visual Secret Sharing Scheme Based on Turtle Shell Structure Matrix," 
+Multimedia Tools and Applications, vol. 79, no. 1, pp. 453-476, Jan. 2020.  
+[26] C. Wang, W. Zhang, J. Liu, et al., "Fast Matrix Embedding By Matrix 
+Extending Used Steganographic Schemes," IEEE Transactions on 
+Information Forensics & Security, vol. 7, no. 1, pp. 346-350, Jan. 2012. 
+[27] S. Raniprima, B. Hidayat, and N. Andini, "Digital Image Steganography 
+with Encryption Based on Rubik's Cube Principle," in Proc. 2016 
+International Conference on Control, Electronics, Renewable Energy and 
+Communications (ICCEREC), Bandung, Indonesia, 2017, pp. 1-6. 
+[28] H. J. Ko, C. T. Huang, H. W. Tseng, and S. J. Wang, "Efficient Cost-
+Reduced with High-Quality Image of Imperceptible Steganography Using 
+Modulo and Magic Cube," IEEE Access, vol. 10, pp. 67686-67693, 2022. 
+[29] K. Vandana and S. K. Kumari, "Improving Security with Efficient Key 
+Management in Public Cloud Using Hybrid AES, ECC, and LSB 
+Steganography Comparing with Novel Hybrid Cube Base Obfuscation," 
+in Proc. 2022 International Conference on Business Analytics for 
+Technology and Security (ICBATS), Dubai, United Arab Emirates, 2022, 
+pp. 1-6. 
+[30] S. K. Patel and C. Saravanan, "Performance Analysis of Hybrid Edge 
+Detector Scheme and Magic Cube Based Scheme for Steganography 
+Application," in Proc. 2018 International Conference on Communication, 
+Computing and Internet of Things, Chennai, India, 2018. 
+[31] C. F. Lee, J. J. Shen, S. Agrawal, et al., "Data Hiding Method Based on 
+3D 
+...(truncated, 7679 chars)
+=== Page 11 ===
+ 
+international conferences and journals and over 37 books. He 
+was cited over 48,510 times and has an h-factor of 100 
+according to Google Scholar. Several well-known concepts 
+and algorithms were adopted in textbooks. He also worked 
+with the National Science Council, Ministry of Technology, 
+Ministry of Education, Ministry of Transportation, Ministry of 
+Economic Affairs and other Government agencies on more 
+than 100 projects and holds 34 patents, including one in US 
+and nineteen in China.  
+ 
+ 
