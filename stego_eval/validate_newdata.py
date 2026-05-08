@@ -308,33 +308,40 @@ def main():
                 ]
             )
 
-            cmds = [
-                base_encode_cmd,
-                [
-                    str(args.opus_demo),
-                    "-d",
-                    str(rate),
-                    str(channels),
-                    str(base_bit),
-                    str(base_pcm),
-                ],
-                stego_encode_cmd,
-                [
-                    str(args.opus_demo),
-                    "-d",
-                    str(rate),
-                    str(channels),
-                    "-stego_out",
-                    str(recovered),
-                    "-stego_bps",
-                    str(args.stego_bps),
-                    str(stego_bit),
-                    str(stego_pcm),
-                ],
-            ]
+            # Base encode/decode (no stego)
+            run_cmd(base_encode_cmd, timeout_sec=args.timeout)
+            run_cmd([
+                str(args.opus_demo),
+                "-d",
+                str(rate),
+                str(channels),
+                str(base_bit),
+                str(base_pcm),
+            ], timeout_sec=args.timeout)
 
-            for cmd in cmds:
-                run_cmd(cmd, timeout_sec=args.timeout)
+            # Stego encode: capture stderr for embedded bits count
+            stego_enc_result = run_cmd(stego_encode_cmd, timeout_sec=args.timeout)
+            embedded_bits = 0
+            for line in stego_enc_result.stderr.splitlines():
+                if "Stego embedded bits:" in line:
+                    try:
+                        # Format: "Stego embedded bits: 12345."
+                        embedded_bits = int(line.split(":")[1].strip().rstrip("."))
+                    except ValueError:
+                        pass
+
+            run_cmd([
+                str(args.opus_demo),
+                "-d",
+                str(rate),
+                str(channels),
+                "-stego_out",
+                str(recovered),
+                "-stego_bps",
+                str(args.stego_bps),
+                str(stego_bit),
+                str(stego_pcm),
+            ], timeout_sec=args.timeout)
 
             metrics_cmd = [
                 sys.executable,
@@ -361,6 +368,10 @@ def main():
             stego_Bps = parse_metric_value(m.stdout, "Stego info rate:")
             bit_acc = compute_bit_accuracy(args.secret, recovered)
 
+            # Compute encoder-side net embedded B/s
+            enc_duration_s = len(stego_pcm.read_bytes()) / float(rate * channels * 2) if stego_pcm.exists() else 0
+            embedded_Bps = (embedded_bits / 8.0) / enc_duration_s if enc_duration_s > 0 else 0.0
+
             if not args.no_wav_export:
                 pcm_to_wav_s16le(base_pcm, args.output_dir / f"{stem}_base_dec.wav", rate, channels)
                 pcm_to_wav_s16le(stego_pcm, args.output_dir / f"{stem}_stego_dec.wav", rate, channels)
@@ -376,6 +387,8 @@ def main():
                     "psnr": psnr,
                     "opus_kbps": opus_kbps,
                     "stego_Bps": stego_Bps,
+                    "embedded_Bps": round(embedded_Bps, 3),
+                    "embedded_bits": embedded_bits,
                     "bit_acc": round(bit_acc, 4),
                     "time_sec": round(time.time() - start, 2),
                 }
@@ -392,6 +405,7 @@ def main():
             f"{rel_display}: status={item['status']} | "
             f"PSNR={item.get('psnr', 'N/A')} | "
             f"Stego={item.get('stego_Bps', 'N/A')} | "
+            f"EmbBps={item.get('embedded_Bps', 'N/A')} | "
             f"bit_acc={item.get('bit_acc', 'N/A')}"
         )
 
@@ -399,6 +413,7 @@ def main():
     psnr_vals = [v for v in psnr_vals if v is not None]
     stego_vals = [parse_float_prefix(r.get("stego_Bps", "N/A")) for r in results if r.get("status") == "success"]
     stego_vals = [v for v in stego_vals if v is not None]
+    embedded_vals = [r.get("embedded_Bps") for r in results if r.get("status") == "success" and isinstance(r.get("embedded_Bps"), (int, float))]
     bit_acc_vals = [r.get("bit_acc") for r in results if r.get("status") == "success" and isinstance(r.get("bit_acc"), float)]
 
     summary = {
@@ -407,6 +422,7 @@ def main():
         "timeout": sum(1 for r in results if r.get("status") == "timeout"),
         "avg_psnr_db": round(sum(psnr_vals) / len(psnr_vals), 3) if psnr_vals else None,
         "avg_stego_Bps": round(sum(stego_vals) / len(stego_vals), 3) if stego_vals else None,
+        "avg_embedded_Bps": round(sum(embedded_vals) / len(embedded_vals), 3) if embedded_vals else None,
         "avg_bit_acc": round(sum(bit_acc_vals) / len(bit_acc_vals), 4) if bit_acc_vals else None,
     }
 

@@ -8,6 +8,7 @@
 #include "structs.h"
 
 #define SILK_STEGO_MAX_BITS 6
+#define SILK_STEGO_MAX_COST_DATA 2
 
 /* Gain index matrix embedding over SILK subframes. */
 void silk_stego_embed_mixed(

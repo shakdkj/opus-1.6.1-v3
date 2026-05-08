@@ -158,7 +158,7 @@ static opus_int silk_stego_matrix_embed_gains(
         }
     }
 
-    if( !found ) {
+    if( !found || best_cost > SILK_STEGO_MAX_COST_DATA ) {
         *applied_bits_out = 0;
         *applied_nbits_out = 0;
         return 0;
