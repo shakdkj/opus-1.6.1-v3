@@ -12,6 +12,8 @@
 #define MAX_PACKET_SIZE 1500
 #define STEGO_DEFAULT_BPS 250
 #define STEGO_FRAME_MAX_BITS 6
+#define STEGO_SEQ_BITS 2
+#define STEGO_PAYLOAD_BITS 4
 
 typedef struct {
     unsigned char *input;
@@ -145,6 +147,7 @@ static int run_encode(int argc, char **argv)
     int bitrate_bps;
     int cbr = 0;
     int stego_bps = STEGO_DEFAULT_BPS;
+    int stego_seq = 0;
     const char *stego_in_file = NULL;
     const char *pcm_in_path;
     const char *bit_out_path;
@@ -160,6 +163,7 @@ static int run_encode(int argc, char **argv)
     StegoTxState stego_tx;
     opus_int64 stego_budget_acc = 0;
     opus_int64 frames = 0;
+    int frame_seq_counter = 0;
 
     if (argc < 8) {
         return 1;
@@ -182,6 +186,9 @@ static int run_encode(int argc, char **argv)
         } else if (strcmp(argv[argi], "-stego_bps") == 0 && argi + 1 < argc - 1) {
             stego_bps = atoi(argv[argi + 1]);
             argi += 2;
+        } else if (strcmp(argv[argi], "-stego_seq") == 0) {
+            stego_seq = 1;
+            argi++;
         } else {
             fprintf(stderr, "Unknown encode option: %s\n", argv[argi]);
             return 1;
@@ -266,7 +273,20 @@ static int run_encode(int argc, char **argv)
         if (stego_in_buf && stego_tx_has_next_bit(&stego_tx)) {
             int allow = stego_budget_allow_bits(&stego_budget_acc, stego_bps, frame_size, rate, STEGO_FRAME_MAX_BITS);
             opus_int32 saved_pos = stego_tx.input_pos;
-            stego_tx_prepare_frame_bits(&stego_tx, allow, &bits, &nbits);
+            int payload_nbits = 0;
+            if (stego_seq) {
+                /* Seq mode: read up to 4 payload bits, prepend 2-bit seq counter. */
+                int payload_bits = 0;
+                int max_payload = STEGO_PAYLOAD_BITS;
+                if (max_payload > allow - STEGO_SEQ_BITS) max_payload = allow - STEGO_SEQ_BITS;
+                if (max_payload < 0) max_payload = 0;
+                stego_tx_prepare_frame_bits(&stego_tx, max_payload, &payload_bits, &payload_nbits);
+                nbits = payload_nbits + STEGO_SEQ_BITS;
+                bits = payload_bits | ((frame_seq_counter & ((1 << STEGO_SEQ_BITS) - 1)) << payload_nbits);
+                frame_seq_counter++;
+            } else {
+                stego_tx_prepare_frame_bits(&stego_tx, allow, &bits, &nbits);
+            }
             stego_ctl = ((nbits & 0xFF) << 8) | (bits & 0xFF);
             opus_encoder_ctl(enc, OPUS_SET_STEGO_BITS(stego_ctl));
 
@@ -283,9 +303,17 @@ static int run_encode(int argc, char **argv)
 
             opus_encoder_ctl(enc, OPUS_GET_STEGO_BITS(&applied_ctl));
             applied_nbits = (applied_ctl >> 8) & 0xFF;
-            /* Only consume bits that were actually embedded. */
-            stego_tx.input_pos = saved_pos + applied_nbits;
-            stego_tx.embedded_bits += applied_nbits;
+            /* Only consume payload bits from the secret, not seq bits. */
+            if (stego_seq) {
+                int payload_applied = applied_nbits - STEGO_SEQ_BITS;
+                if (payload_applied < 0) payload_applied = 0;
+                if (payload_applied > payload_nbits) payload_applied = payload_nbits;
+                stego_tx.input_pos = saved_pos + payload_applied;
+                stego_tx.embedded_bits += payload_applied;
+            } else {
+                stego_tx.input_pos = saved_pos + applied_nbits;
+                stego_tx.embedded_bits += applied_nbits;
+            }
             /* Return unused budget to the accumulator. */
             stego_budget_acc += (opus_int64)(allow - applied_nbits) * rate;
         } else {
@@ -335,6 +363,7 @@ static int run_decode(int argc, char **argv)
     int rate;
     int channels;
     int stego_bps = STEGO_DEFAULT_BPS;
+    int stego_seq = 0;
     const char *stego_out_file = NULL;
     const char *bit_in_path;
     const char *pcm_out_path;
@@ -352,6 +381,9 @@ static int run_decode(int argc, char **argv)
     int partial_bits = 0;
     opus_int64 extracted_bits = 0;
     opus_int64 frames = 0;
+    int rx_expected_seq = 0;
+    int rx_seq_inited = 0;
+    int rx_nibble_pos = 0;
 
     if (argc < 6) {
         return 1;
@@ -366,6 +398,9 @@ static int run_decode(int argc, char **argv)
         } else if (strcmp(argv[argi], "-stego_bps") == 0 && argi + 1 < argc - 1) {
             stego_bps = atoi(argv[argi + 1]);
             argi += 2;
+        } else if (strcmp(argv[argi], "-stego_seq") == 0) {
+            stego_seq = 1;
+            argi++;
         } else {
             fprintf(stderr, "Unknown decode option: %s\n", argv[argi]);
             return 1;
@@ -512,7 +547,46 @@ static int run_decode(int argc, char **argv)
             bits = stego_ctl & 0xFF;
             nbits = (stego_ctl >> 8) & 0xFF;
             if (nbits > allow) nbits = allow;
-            if (nbits > 0) {
+            if (stego_seq && nbits >= STEGO_SEQ_BITS + STEGO_PAYLOAD_BITS) {
+                /* Seq mode: split each 6-bit frame into [seq:2][payload:4]. */
+                int pos = 0;
+                while (pos + STEGO_SEQ_BITS + STEGO_PAYLOAD_BITS <= nbits) {
+                    int frame_bits = (bits >> pos) & ((1 << (STEGO_SEQ_BITS + STEGO_PAYLOAD_BITS)) - 1);
+                    int seq = frame_bits >> STEGO_PAYLOAD_BITS;
+                    int payload = frame_bits & ((1 << STEGO_PAYLOAD_BITS) - 1);
+                    /* Fill gaps from lost frames with zero payload. */
+                    if (rx_seq_inited) {
+                        int seq_mask = (1 << STEGO_SEQ_BITS) - 1;
+                        int gap_count = 0;
+                        while (seq != rx_expected_seq) {
+                            if (!stego_rx_write_bits(fstego, 0, STEGO_PAYLOAD_BITS,
+                                                     &partial_byte, &partial_bits))
+                                return 1;
+                            extracted_bits += STEGO_PAYLOAD_BITS;
+                            rx_expected_seq = (rx_expected_seq + 1) & seq_mask;
+                            gap_count++;
+                        }
+                        if (gap_count > 0) {
+                            fprintf(stderr, "SEQ GAP: %d frames at nibble %d\n",
+                                    gap_count, rx_nibble_pos);
+                            rx_nibble_pos += gap_count;
+                        }
+                    }
+                    if (!stego_rx_write_bits(fstego, payload, STEGO_PAYLOAD_BITS,
+                                             &partial_byte, &partial_bits)) {
+                        fprintf(stderr, "Failed writing stego output (seq).\n");
+                        return 1;
+                    }
+                    extracted_bits += STEGO_PAYLOAD_BITS;
+                    rx_nibble_pos++;
+                    if (!rx_seq_inited) {
+                        rx_expected_seq = seq;
+                        rx_seq_inited = 1;
+                    }
+                    rx_expected_seq = (rx_expected_seq + 1) & ((1 << STEGO_SEQ_BITS) - 1);
+                    pos += STEGO_SEQ_BITS + STEGO_PAYLOAD_BITS;
+                }
+            } else if (nbits > 0) {
                 if (!stego_rx_write_bits(fstego, bits, nbits, &partial_byte, &partial_bits)) {
                     fprintf(stderr, "Failed writing stego output.\n");
                     free(out_pcm);
