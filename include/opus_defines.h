@@ -181,6 +181,9 @@ extern "C" {
 #define OPUS_GET_IGNORE_EXTENSIONS_REQUEST 4059
 #define OPUS_SET_STEGO_BITS_REQUEST 4060
 #define OPUS_GET_STEGO_BITS_REQUEST 4061
+#define OPUS_GET_GAIN_INDICES_REQUEST 4062
+#define OPUS_SET_STC_INDEP_REQUEST 4063
+#define OPUS_SET_COST_AWARE_REQUEST 4064
 
 /** Defines for the presence of extended APIs. */
 #define OPUS_HAVE_OPUS_PROJECTION_H
@@ -677,6 +680,14 @@ extern "C" {
 /** Gets the currently configured packed pulse-sign stego data.
   * @hideinitializer */
 #define OPUS_GET_STEGO_BITS(x) OPUS_GET_STEGO_BITS_REQUEST, opus_check_int_ptr(x)
+
+/** Gets the 4 SILK gain indices (for cost map / STC). @hideinitializer */
+#define OPUS_GET_GAIN_INDICES(x) OPUS_GET_GAIN_INDICES_REQUEST, x
+
+/** Force CODE_INDEPENDENTLY for STC two-pass determinism. @hideinitializer */
+#define OPUS_SET_STC_INDEP(x) OPUS_SET_STC_INDEP_REQUEST, opus_check_int(x)
+/** Enable cost-aware per-frame bit allocation. @hideinitializer */
+#define OPUS_SET_COST_AWARE(x) OPUS_SET_COST_AWARE_REQUEST, opus_check_int(x)
 
 /**@}*/
 

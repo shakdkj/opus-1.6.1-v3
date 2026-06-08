@@ -3268,6 +3268,18 @@ int opus_encoder_ctl(OpusEncoder *st, int request, ...)
             *value = (st->silk_mode.stego_nbits << 8) | (st->silk_mode.stego_bits & 0xFF);
         }
         break;
+        case OPUS_SET_STC_INDEP_REQUEST:
+        {
+            opus_int32 value = va_arg(ap, opus_int32);
+            st->silk_mode.stc_force_independent = (value != 0);
+        }
+        break;
+        case OPUS_SET_COST_AWARE_REQUEST:
+        {
+            opus_int32 value = va_arg(ap, opus_int32);
+            st->silk_mode.stc_cost_aware = (value != 0);
+        }
+        break;
         case OPUS_RESET_STATE:
         {
            void *silk_enc;

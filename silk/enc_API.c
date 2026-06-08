@@ -498,9 +498,17 @@ opus_int silk_Encode(                                   /* O    Returns error co
                 psEnc->state_Fxx[ 0 ].sCmn.stego_nbits_pending = 0;
                 psEnc->state_Fxx[ 0 ].sCmn.stego_bits_pending = 0;
             }
+            psEnc->state_Fxx[ 0 ].sCmn.stc_force_independent =
+                encControl->stc_force_independent;
+            psEnc->state_Fxx[ 0 ].sCmn.stc_cost_aware =
+                encControl->stc_cost_aware;
             if( encControl->nChannelsInternal > 1 ) {
                 psEnc->state_Fxx[ 1 ].sCmn.stego_nbits_pending = 0;
                 psEnc->state_Fxx[ 1 ].sCmn.stego_bits_pending = 0;
+                psEnc->state_Fxx[ 1 ].sCmn.stc_force_independent =
+                    encControl->stc_force_independent;
+                psEnc->state_Fxx[ 1 ].sCmn.stc_cost_aware =
+                    encControl->stc_cost_aware;
             }
 
             /* Encode */
@@ -544,7 +552,8 @@ opus_int silk_Encode(                                   /* O    Returns error co
                            need LTP scaling; the LTP state is well-defined. */
                         condCoding = CODE_INDEPENDENTLY_NO_LTP_SCALING;
                     } else {
-                        condCoding = CODE_CONDITIONALLY;
+                        condCoding = psEnc->state_Fxx[ n ].sCmn.stc_force_independent ?
+                                     CODE_INDEPENDENTLY : CODE_CONDITIONALLY;
                     }
                     if( ( ret = silk_encode_frame_Fxx( &psEnc->state_Fxx[ n ], nBytesOut, psRangeEnc, condCoding, maxBits, useCBR ) ) != 0 ) {
                         silk_assert( 0 );

@@ -207,6 +207,20 @@ typedef struct {
     opus_int                     stego_nbits_pending;
     opus_int                     stego_bits_applied;
     opus_int                     stego_nbits_applied;
+    opus_int                     stc_force_independent;
+    opus_int                     stc_cost_aware;
+
+    /* STC frame buffer for cross-frame optimization.
+       nsq_only: run NSQ + cost map only, skip bitstream encode.
+       replay_sym: if >= 0, use this 6-bit symbol as stego target. */
+#define STC_BUF_K 2
+    opus_int                     stc_buf_enabled;
+    opus_int                     stc_nsq_only;
+    opus_int                     stc_replay_sym;
+    opus_int                     stc_buf_cost[ STC_BUF_K ][ 64 ];
+    opus_int8                    stc_buf_delta[ STC_BUF_K ][ 64 ][ MAX_NB_SUBFR ];
+    opus_int                     stc_buf_count;
+    opus_int                     stc_buf_syms[ STC_BUF_K ];
 
     int                          arch;
 

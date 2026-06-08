@@ -149,6 +149,9 @@ static int run_encode(int argc, char **argv)
     int stego_bps = STEGO_DEFAULT_BPS;
     int stego_seq = 0;
     const char *stego_in_file = NULL;
+    const char *stego_stc_target = NULL;
+    int stego_stc_indep = 0;
+    FILE *fstc_target = NULL;
     const char *pcm_in_path;
     const char *bit_out_path;
     int argi;
@@ -188,6 +191,12 @@ static int run_encode(int argc, char **argv)
             argi += 2;
         } else if (strcmp(argv[argi], "-stego_seq") == 0) {
             stego_seq = 1;
+            argi++;
+        } else if (strcmp(argv[argi], "-stego_stc_target") == 0 && argi + 1 < argc - 1) {
+            stego_stc_target = argv[argi + 1];
+            argi += 2;
+        } else if (strcmp(argv[argi], "-stego_stc_indep") == 0) {
+            stego_stc_indep = 1;
             argi++;
         } else {
             fprintf(stderr, "Unknown encode option: %s\n", argv[argi]);
@@ -231,6 +240,15 @@ static int run_encode(int argc, char **argv)
         free(stego_in_buf);
         return 1;
     }
+    if (stego_stc_target) {
+        fstc_target = fopen(stego_stc_target, "rb");
+        if (!fstc_target) {
+            fprintf(stderr, "Failed to open STC target file: %s\n", stego_stc_target);
+            fclose(fin); fclose(fout);
+            free(stego_in_buf);
+            return 1;
+        }
+    }
 
     enc = opus_encoder_create(rate, channels, OPUS_APPLICATION_VOIP, &err);
     if (!enc || err != OPUS_OK) {
@@ -243,6 +261,13 @@ static int run_encode(int argc, char **argv)
     opus_encoder_ctl(enc, OPUS_SET_BITRATE(bitrate_bps));
     if (cbr) {
         opus_encoder_ctl(enc, OPUS_SET_VBR(0));
+    }
+    if (stego_stc_indep) {
+        opus_encoder_ctl(enc, OPUS_SET_STC_INDEP(1));
+    }
+    /* Cost-aware 3-bit STC: only when NOT using explicit targets */
+    if (!stego_stc_target && !stego_seq) {
+        opus_encoder_ctl(enc, OPUS_SET_COST_AWARE(1));
     }
 
     in_pcm = (opus_int16*)malloc((size_t)frame_size * channels * sizeof(opus_int16));
@@ -270,7 +295,27 @@ static int run_encode(int argc, char **argv)
             for (i = got; i < (size_t)frame_size * channels; i++) in_pcm[i] = 0;
         }
 
-        if (stego_in_buf && stego_tx_has_next_bit(&stego_tx)) {
+        if (fstc_target) {
+            /* STC target mode: read 1 byte per frame (lower 6 bits = target). */
+            int target_byte = fgetc(fstc_target);
+            if (target_byte == EOF) break;
+            nbits = 6;
+            bits = target_byte & 0x3F;
+            stego_ctl = ((nbits & 0xFF) << 8) | (bits & 0xFF);
+            opus_encoder_ctl(enc, OPUS_SET_STEGO_BITS(stego_ctl));
+
+            packet_len = opus_encode(enc, in_pcm, frame_size, packet, MAX_PACKET_SIZE);
+            if (packet_len < 0) {
+                fprintf(stderr, "opus_encode failed: %d\n", packet_len);
+                free(in_pcm); opus_encoder_destroy(enc);
+                fclose(fin); fclose(fout);
+                if (fstc_target) fclose(fstc_target);
+                free(stego_in_buf);
+                return 1;
+            }
+            opus_encoder_ctl(enc, OPUS_GET_STEGO_BITS(&applied_ctl));
+            applied_nbits = (applied_ctl >> 8) & 0xFF;
+        } else if (stego_in_buf && stego_tx_has_next_bit(&stego_tx)) {
             int allow = stego_budget_allow_bits(&stego_budget_acc, stego_bps, frame_size, rate, STEGO_FRAME_MAX_BITS);
             opus_int32 saved_pos = stego_tx.input_pos;
             int payload_nbits = 0;
@@ -353,6 +398,7 @@ static int run_encode(int argc, char **argv)
     opus_encoder_destroy(enc);
     fclose(fin);
     fclose(fout);
+    if (fstc_target) fclose(fstc_target);
     free(stego_in_buf);
     return 0;
 }
@@ -365,12 +411,14 @@ static int run_decode(int argc, char **argv)
     int stego_bps = STEGO_DEFAULT_BPS;
     int stego_seq = 0;
     const char *stego_out_file = NULL;
+    const char *stego_gains_file = NULL;
     const char *bit_in_path;
     const char *pcm_out_path;
     int argi;
     FILE *fin = NULL;
     FILE *fout = NULL;
     FILE *fstego = NULL;
+    FILE *fgains = NULL;
     OpusDecoder *dec = NULL;
     opus_int16 *out_pcm = NULL;
     unsigned char *packet = NULL;
@@ -401,6 +449,9 @@ static int run_decode(int argc, char **argv)
         } else if (strcmp(argv[argi], "-stego_seq") == 0) {
             stego_seq = 1;
             argi++;
+        } else if (strcmp(argv[argi], "-stego_dump_gains") == 0 && argi + 1 < argc - 1) {
+            stego_gains_file = argv[argi + 1];
+            argi += 2;
         } else {
             fprintf(stderr, "Unknown decode option: %s\n", argv[argi]);
             return 1;
@@ -434,6 +485,16 @@ static int run_decode(int argc, char **argv)
         fstego = fopen(stego_out_file, "wb");
         if (!fstego) {
             fprintf(stderr, "Failed to open stego output: %s\n", stego_out_file);
+            fclose(fin);
+            fclose(fout);
+            return 1;
+        }
+    }
+    if (stego_gains_file) {
+        fgains = fopen(stego_gains_file, "wb");
+        if (!fgains) {
+            fprintf(stderr, "Failed to open gains dump: %s\n", stego_gains_file);
+            if (fstego) fclose(fstego);
             fclose(fin);
             fclose(fout);
             return 1;
@@ -541,6 +602,12 @@ static int run_decode(int argc, char **argv)
             return 1;
         }
 
+        if (fgains) {
+            opus_int8 gain_idx[ 4 ];
+            opus_decoder_ctl(dec, OPUS_GET_GAIN_INDICES(gain_idx));
+            fwrite(gain_idx, 1, 4, fgains);
+        }
+
         if (fstego) {
             allow = stego_budget_allow_bits(&stego_budget_acc, stego_bps, frame_size, rate, STEGO_FRAME_MAX_BITS);
             opus_decoder_ctl(dec, OPUS_GET_STEGO_BITS(&stego_ctl));
@@ -615,6 +682,7 @@ static int run_decode(int argc, char **argv)
     free(packet);
     opus_decoder_destroy(dec);
     if (fstego) fclose(fstego);
+    if (fgains) fclose(fgains);
     fclose(fin);
     fclose(fout);
     return 0;

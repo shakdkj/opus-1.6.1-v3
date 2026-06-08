@@ -88,6 +88,7 @@ struct OpusDecoder {
    int          last_packet_duration;
    int          stego_bits_last;
    int          stego_nbits_last;
+   opus_int8    gain_indices[ 4 ];
 #ifndef FIXED_POINT
    opus_val16   softclip_mem[2];
 #endif
@@ -501,6 +502,10 @@ static int opus_decode_frame(OpusDecoder *st, const unsigned char *data,
          silk_decoder_state *silk_ch0 = (silk_decoder_state*)silk_dec;
          st->stego_bits_last = silk_ch0->stego_bits_last;
          st->stego_nbits_last = silk_ch0->stego_nbits_last;
+         st->gain_indices[ 0 ] = silk_ch0->indices.GainsIndices[ 0 ];
+         st->gain_indices[ 1 ] = silk_ch0->indices.GainsIndices[ 1 ];
+         st->gain_indices[ 2 ] = silk_ch0->indices.GainsIndices[ 2 ];
+         st->gain_indices[ 3 ] = silk_ch0->indices.GainsIndices[ 3 ];
       }
      if (pcm_too_small) {
         OPUS_COPY(pcm, pcm_silk, frame_size*st->channels);

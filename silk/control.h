@@ -103,6 +103,12 @@ typedef struct {
     /* I: Number of valid bits in stego_bits for this packet/frame                           */
     opus_int stego_nbits;
 
+    /* I: Force CODE_INDEPENDENTLY for STC two-pass determinism                              */
+    opus_int stc_force_independent;
+
+    /* I: Enable cost-aware per-frame bit allocation                                         */
+    opus_int stc_cost_aware;
+
     /* O:   Internal sampling rate used, in Hertz; 8000/12000/16000                         */
     opus_int32 internalSampleRate;
 
