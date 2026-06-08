@@ -52,10 +52,13 @@ function(get_package_version PACKAGE_VERSION PROJECT_VERSION)
 
   if(OPUS_PACKAGE_VERSION)
     string(REGEX
-      REPLACE "^([0-9]+.[0-9]+\\.?([0-9]+)?).*"
+      REPLACE "^([0-9]+\\.[0-9]+(\\.[0-9]+)?).*"
                "\\1"
                OPUS_PROJECT_VERSION
                ${OPUS_PACKAGE_VERSION})
+    if(NOT OPUS_PROJECT_VERSION MATCHES "^[0-9]+\\.[0-9]+")
+      set(OPUS_PROJECT_VERSION "1.6.1")
+    endif()
   else()
     # fail to parse version from git and package version
     message(WARNING "Could not get package version.")

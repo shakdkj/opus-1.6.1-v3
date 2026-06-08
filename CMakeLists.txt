@@ -763,3 +763,10 @@ if(BUILD_TESTING AND NOT BUILD_SHARED_LIBS)
     target_compile_definitions(test_opus_custom PRIVATE OPUS_BUILD)
   endif()
 endif()
+
+# ---- Watermark extension (builds shared library with stego API) ----
+option(OPUS_BUILD_WATERMARK "Build watermark shared library and test." ON)
+if(OPUS_BUILD_WATERMARK)
+  add_subdirectory(watermark)
+  add_subdirectory(test)
+endif()
