@@ -172,12 +172,23 @@ def parse_gap_nibbles(stderr_text):
     return gaps
 
 
-def compute_bit_accuracy(secret_path, recovered_path):
+def compute_bit_accuracy(secret_path, recovered_path, embedded_bits=None):
     a = secret_path.read_bytes()
     b = recovered_path.read_bytes()
     n = min(len(a), len(b))
     if n <= 0:
         return 0.0
+    if embedded_bits is not None and embedded_bits > 0:
+        full_bytes = embedded_bits // 8
+        rem_bits = embedded_bits % 8
+        total_bits = embedded_bits
+        ok = 0
+        for i in range(min(n, full_bytes)):
+            ok += 8 - bin(a[i] ^ b[i]).count("1")
+        if rem_bits > 0 and full_bytes < n:
+            mask = (1 << rem_bits) - 1
+            ok += rem_bits - bin((a[full_bytes] ^ b[full_bytes]) & mask).count("1")
+        return ok / total_bits
     ok = sum(8 - bin(a[i] ^ b[i]).count("1") for i in range(n))
     return ok / (n * 8)
 

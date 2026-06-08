@@ -84,12 +84,23 @@ def parse_float_prefix(text: str):
         return None
 
 
-def compute_bit_accuracy(secret_path: Path, recovered_path: Path):
+def compute_bit_accuracy(secret_path: Path, recovered_path: Path, embedded_bits=None):
     secret = secret_path.read_bytes()
     recovered = recovered_path.read_bytes()
     n = min(len(secret), len(recovered))
     if n <= 0:
         return 0.0
+    if embedded_bits is not None and embedded_bits > 0:
+        full_bytes = embedded_bits // 8
+        rem_bits = embedded_bits % 8
+        total_bits = embedded_bits
+        ok_bits = 0
+        for i in range(min(n, full_bytes)):
+            ok_bits += 8 - bin(secret[i] ^ recovered[i]).count("1")
+        if rem_bits > 0 and full_bytes < n:
+            mask = (1 << rem_bits) - 1
+            ok_bits += rem_bits - bin((secret[full_bytes] ^ recovered[full_bytes]) & mask).count("1")
+        return ok_bits / total_bits
     total_bits = n * 8
     ok_bits = 0
     for i in range(n):
@@ -366,7 +377,7 @@ def main():
             psnr = parse_metric_value(m.stdout, "PSNR:")
             opus_kbps = parse_metric_value(m.stdout, "Opus bitrate:")
             stego_Bps = parse_metric_value(m.stdout, "Stego info rate:")
-            bit_acc = compute_bit_accuracy(args.secret, recovered)
+            bit_acc = compute_bit_accuracy(args.secret, recovered, embedded_bits)
 
             # Compute encoder-side net embedded B/s
             enc_duration_s = len(stego_pcm.read_bytes()) / float(rate * channels * 2) if stego_pcm.exists() else 0
